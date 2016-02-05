@@ -1,0 +1,15 @@
+var data = [ 
+    { 
+      "key" : "Living with Computers" , 
+      "values" : [ [ "Fall Semester 2005" , 76] , [ "Spring Semester 2006" , 77] , [ "Fall Semester 2006" , 89] , [ "Spring Semester 2007" , 79] , [ "Summer Semester 2007" , 50] , [ "Fall Semester 2007" , 0] , [ "Spring Semester 2008" , 68]]},
+      { 
+      "key" : "Select Top in Comp Science" , 
+      "values" : [ [ "Fall Semester 2005" , 16] , [ "Spring Semester 2006" , 15] , [ "Fall Semester 2006" , 19] , [ "Spring Semester 2007" , 20] , [ "Summer Semester 2007" , 13] , [ "Fall Semester 2007" , 15] , [ "Spring Semester 2008" , 14]]},
+
+      { 
+      "key" : "Intro to Computer Science" , 
+      "values" : [ [ "Fall Semester 2005" , 20] , [ "Spring Semester 2006" , 40] , [ "Fall Semester 2006" , 35] , [ "Spring Semester 2007" , 27] , [ "Summer Semester 2007" , 37] , [ "Fall Semester 2007" , 29] , [ "Spring Semester 2008" , 33]]},
+
+      { 
+      "key" : "Intro to Object-Oriented Prog" , 
+      "values" : [ [ "Fall Semester 2005" , 7] , [ "Spring Semester 2006" , 10] , [ "Fall Semester 2006" , 5] , [ "Spring Semester 2007" , 8] , [ "Summer Semester 2007" , 12] , [ "Fall Semester 2007" , 9] , [ "Spring Semester 2008" , 4]]}];
