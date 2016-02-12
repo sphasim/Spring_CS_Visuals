@@ -9,6 +9,7 @@
 	<body>
 		 <h1>Semester Offered</h1>
 		 <div id = "chartContainer"></div>
+     <div id = "chartContainer1"></div>
 		 <!-- {% for classes in semester_classes1 %}
 		 {{ classes.id }}, {{ classes.a_semester }}, {{ classes.a_course }}, {{ classes.crn_number }}, {{ classes.section_number }}, {{ classes.max_enrollment }}, {{ classes.act_enrollment }}, {{ classes.course_type }}<br>
 		 {% endfor %} -->
@@ -37,7 +38,7 @@
 
 		var classes_offered = [];
 				{% for classes in semester_classes1 %}
-		 		classes_offered.push(['{{ classes.a_semester }}', '{{ classes.a_course }}', "{{ classes.course_type }}", {{ classes.crn_number }}, {{ classes.section_number }}, {{ classes.max_enrollment }}, {{ classes.act_enrollment }}, '{{ classes.a_semester }}'])
+		 		classes_offered.push(['{{ classes.a_semester }}', '{{ classes.a_course }}', "{{ classes.course_type }}", {{ classes.crn_number }}, {{ classes.section_number }}, {{ classes.max_enrollment }}, {{ classes.act_enrollment }}])
 		 		{% endfor %}
 
         // console.log(classes_offered)
@@ -50,7 +51,7 @@
         // console.log(d3.csv.format(classes_offered))
         data_csv = d3.csv.format(classes_offered)
         // My header
-var headers = ["Semester","Title", "course_type", "crn_number","section_number","max_enrollment", "act_enrollment", "Semester1"].join(",");
+var headers = ["Semester","Title", "course_type", "crn_number","section_number","max_enrollment", "act_enrollment"].join(",");
 
 // First I get the file or URL data like text
   // Then I add the header and parse to csv - returns json format
@@ -58,49 +59,232 @@ var headers = ["Semester","Title", "course_type", "crn_number","section_number",
   console.log("Hey");
   console.log(data_json)
 
+var margin = {top: 30, right: 20, bottom: 70, left: 50},
+    width = 1200 - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
+  // Set the ranges
+// var x = d3.time.scale().range([0, width]);
+var x = d3.scale.ordinal().rangeRoundBands([30, width-40], .1)
+var y = d3.scale.linear().range([height, 0]);
+
+// Define the axes
+var xAxis = d3.svg.axis().scale(x)
+    .orient("bottom").ticks(5);
+
+var yAxis = d3.svg.axis().scale(y)
+    .orient("left").ticks(5);
+
+// Define the line
+var priceline = d3.svg.line() 
+    .x(function(d) { return x(d.Semester); })
+    .y(function(d) { return y(+d.act_enrollment); });
+
+// Adds the svg canvas
+var svg = d3.select("#chartContainer1")
+    .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform", 
+              "translate(" + margin.left + "," + margin.top + ")");
+
+//declare our new array’s name will be data and we initiate the nest function;
+var data_json1 = d3.nest()
+      .key(function(d) { return d.Title;}) //assign the key for our new array as Title
+      .entries(data_json);
+
+console.log("data_json1")
+console.log(data_json1);
+console.log(d3.values(data_json1))
+
+d3.values(data_json1).forEach(function(d) {
+    // d.date = parseDate(d.date);
+    d.act_enrollment = +d.act_enrollment;
+    console.log(d.act_enrollment)
+    });
+
+    x.domain(data_json1.map(function(d) { return d.Semester; }));
+
+    y.domain([0, d3.max(data_json1, function(d) { return +d.act_enrollment; })]);
+
+  var color = d3.scale.category10();
+
+  legendSpace = width/data_json1.length; // spacing for the legend
+
+  data_json1.forEach(function(d,i) { 
+
+        svg.append("path")
+            .attr("class", "line")
+            .style("stroke", function() { // Add the colours dynamically
+                return d.color = color(d.key); })
+            .attr("id", 'tag'+d.key.replace(/\s+/g, '')) // assign ID
+            .attr("d", priceline(d.values));
+  })
+
+// Add the X Axis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+
+    // Add the Y Axis
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+
+var stack=d3.layout.stack()
+      .values(function(d) {return d.values;})
+      .x(function(d) {return d.Semester})
+      .y(function(d){return d.Act_enrol})
+
+  // var stacked = stack(data_json1)
+  // console.log(stacked)
+
+  // we need to calculate the maximum y-value
+// across all our layers, and for each data point,
+// we need to combine the start `d.y0` and the
+// height `d.y` to get highest point
+// var maxY = d3.max(stacked, function(d) {
+//   return d3.max(d.values, function(d) {
+//     return d.y0 + d.y;
+//   });
+// });
+
+// var width = 1400,
+//       height = 900;
+
+// var svgcanvas = d3.select("#chartContainer1")
+//       .append("svg")  
+//       .attr("width", width)
+//       .attr("height", height)
+//       .append("g");
+//         //set up axis
+// var x = d3.scale.ordinal()
+//       .rangeRoundBands([30, width-400], .1)
+//       .domain(d3.values(data).map(function(d) { return d.Semester; }));
+
+//         var xAxis = d3.svg.axis()
+//             .scale(x)
+//             .orient("bottom")
+//             .ticks(20)
+//             .outerTickSize(1);
+
+//         var y = d3.scale.linear()
+//             .range([height-150, 0])
+//             .nice()
+//             .domain([0, d3.max(data_json, function(d) {return parseInt(d['act_enrollment'])})]);
+            
+
+//         var yAxis = d3.svg.axis()
+//             .scale(y)
+//             .orient("left")
+//             .ticks(16)
+//             .outerTickSize(1);
+
+//         var tooltip = d3.select("body").append("div")
+//             .attr("class", "tooltip")
+//             .style("opacity", 0);   
+
+//         var tip = d3.tip()
+//               .attr('class', 'd3-tip')
+//               .offset([-10, 0])
+//               .html(function(d) {
+//                 return "<strong>"+d.Title+":</strong> <span style='color:red'>" + d.act_enrollment + "</span>";
+//               })
+
+// // don't want dots overlapping axis, so add in buffer to data domain
+
+//   x.domain(data_json.map(function(d) { return d.Semester; }));
+  
+
+//   y.domain([0, d3.max(data_json, function(d) {return +(d['act_enrollment'])})+1]);
+//         //set color scale
+//         var cValue = function(d) { return d.Title;},
+//              color = d3.scale.category20();
+
+//       //drawing the axis
+//       var y_x_axis = height -150;
+//       d3.select("svg").append("g")
+//           .attr("class", "x axis")
+//           .attr("transform", "translate(0, " + y_x_axis + " )")
+//           .call(xAxis)
+//           .selectAll("text")  
+//               .style("text-anchor", "end")
+//                 .style("font-size", "13px") 
+//               .attr("dx", "-.8em")//relative coordinates (relative to the specified x and y)
+//               .attr("dy", "-1.00em")
+//               .attr("transform", function(d) {
+//                 return "rotate(-80)" 
+//                 });
+//         svgcanvas.call(tip);
+
+//         d3.select("svg").append("g")
+//           .attr("class", "y axis")
+//           .attr("transform", "translate(30,0)")
+//           .call(yAxis)
+//           .append("text")
+//           .attr("class", "label")
+//           .attr("transform", "rotate(-90)")
+//           .attr("y", 6)
+//           .attr("dy", ".71em")
+//           .style("text-anchor", "end")
+//           .text("Number of Students");
+
+//         //addint title
+//         svgcanvas.append("text")
+//             .attr("x", (width / 2))             
+//             .attr("y", 0 + 15)
+//             .attr("class", "title")
+//             .attr("text-anchor", "middle")  
+//             .style("font-size", "16px") 
+//             .style("text-decoration", "underline")  
+//             .text("Computer Science Classes");
+
+  // y.domain([0, d3.max(data_json, function(d) {return +(d['act_enrollment'])})+1]);
+
+// // bind a <g> tag for each layer
+// var layers = svg.selectAll('g.layer')
+//   // .data(stacked, function(d) { return d.name; })
+//     .data(stacked)
+//     .enter()
+//       .append('g')
+//         .attr('class', 'layer')
+//         .attr('fill', function(d) { return color(d.name); })
+
+// // bind a <rect> to each value inside the layer
+// layers.selectAll('rect')
+//   .data(function(d) { return d.values; })
+//   .enter()
+//     .append('rect')
+//       .attr("cx", function(d) { return x(d.Semester);})
+//       .attr('width', width / 3)
+//       .attr('y', function(d) {
+//         // remember that SVG is y-down while our graph is y-up!
+//         // here, we set the top-left of this bar segment
+//         return y(d.y0 + d.y);
+//       }).attr('height', function(d) {
+//         // since we are drawing our bar from the top downwards,
+//         // the length of the bar is the distance from the bottom
+//         // so we subtract from `height`
+//         return height - y(d.y)
+//       });
+
+
+
+
+
 //declare our new array’s name will be data and we initiate the nest function;
   var sum_courses = d3.nest()
         .key(function(d) { return d.Semester;})
         .key(function(d) { return d.Title;}) //assign the key for our new array as Title
-   //      .rollup(function(d) {return d3.sum(d, function(g) {return g.act_enrollment; });// include the rollup function that takes all the individual value variables that are in each unique tittlefield and sums them 
-   // })
+   //add all same titles in a semseter
         .rollup(function(d) { return {"Act_enrol": d3.sum(d, function(g) {return g.act_enrollment; })};})
         .entries(data_json);
 
- 
-
- // .rollup(function(leaves) { return {"length": leaves.length, "total_time": d3.sum(leaves, function(d) {return parseFloat(d.time);})} })
 console.log(sum_courses)
 console.log("Sum Course has what I want. How do access that?")
 
-// console.log(d3.values(sum_courses).map(function(d) {
-//     return d.key; 
-// }));
-
-
-
-         //set up axis
-        var x = d3.scale.ordinal()
-            .rangeRoundBands([30, width-400], .1)
-            .domain(data_json.map(function(d) { return d.Semester; }));
-
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .ticks(20)
-            .outerTickSize(1);
-
-        var y = d3.scale.linear()
-            .range([height-150, 0])
-            .nice()
-            .domain([0, d3.max(data_json, function(d) {return parseInt(d['act_enrollment'])})]);
-            
-
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .ticks(16)
-            .outerTickSize(1);
 
 var data_values = d3.values(sum_courses).map(function(d,i) { 
     return d.values
@@ -373,18 +557,18 @@ var sem_act_enrol = data_json.map(function(obj) {
       
 
     var legend = svgcanvas.selectAll(".legend")
-      .data(color.domain())
-    .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; 
+          .data(color.domain())
+          .enter().append("g")
+          .attr("class", "legend")
+          .attr("transform", function(d, i) { return "translate(0," + i * 19 + ")"; 
     });
 
-   // draw legend colored rectangles
-  legend.append("rect")
-      .attr("x", width-20)
-      .attr("width", 18)
-      .attr("height", 18)
-      .style("fill", color);
+  //  // draw legend colored rectangles
+  // legend.append("rect")
+  //     .attr("x", width-20)
+  //     .attr("width", 18)
+  //     .attr("height", 18)
+  //     .style("fill", color);
 
      // draw legend text
   legend.append("text")
