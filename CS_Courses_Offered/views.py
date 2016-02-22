@@ -5,8 +5,6 @@ from .models import *
 from django.template import RequestContext
 from django.core import serializers
 
-import json
-
 # Create your views here.
 def index(request):
     return HttpResponse("Hello, world. You're at the CS page index.")
@@ -18,9 +16,10 @@ def graph_data(request):
 	class_offered1 = Offering.objects.filter(course_type = 'Lecture')
 	semester_offered = Semester.objects.order_by('id')
 	total_classes = Offering.objects.filter(course_type = 'Lecture')
+	json_data = serializers.serialize("json", Offering.objects.all())
 
-
-
+	# for obj in serializers.deserialize("json", json_data):
+ #    do_something_with(obj)
 	# results = Semester.objects.include(field1__in=inner_qs)
 	# create a dictionary of allthe data in class_offered
 
@@ -28,7 +27,8 @@ def graph_data(request):
 		"semester_classes" : class_offered,
 		"semester_classes1" : class_offered1,
 		"semesters": semester_offered,
-		"classes_type": total_classes
+		"classes_type": total_classes,
+		"json_data": json_data
 	}
 	# print(semester_offered)
 	# return JsonResponse(context_instance=RequestContext(request), 'graph/graphs.html', data, safe=False)

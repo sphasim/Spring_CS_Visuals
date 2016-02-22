@@ -30,6 +30,12 @@
     <svg id="chart1"></svg>
 
 		<script>
+    var json_data = {% autoescape off %} 
+                        {{ json_data }}
+                    {% endautoescape %} 
+
+//"{{json_data}}"
+    console.log(json_data)
 
 		var semesters = [];
 				{% for semester in semesters %}
@@ -39,7 +45,7 @@
 		var classes_offered = [];
 				{% for classes in semester_classes1 %}
 		 		classes_offered.push(['{{ classes.a_semester }}', '{{ classes.a_course }}', "{{ classes.course_type }}", {{ classes.crn_number }}, {{ classes.section_number }}, {{ classes.max_enrollment }}, {{ classes.act_enrollment }}])
-		 		{% endfor %}
+		 		{% endfor %} 
 
         // console.log(classes_offered)
 
