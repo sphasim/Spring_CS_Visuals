@@ -30,17 +30,15 @@
     <svg id="chart1"></svg>
 
 		<script>
-    var json_data = {% autoescape off %} 
-                        {{ json_data }}
-                    {% endautoescape %} 
+    // var json_data = {% autoescape off %} 
+    //                     {{ json_data }}
+    //                 {% endautoescape %} 
+    //  console.log(json_data)          
+    var serialized = {% autoescape off %} 
+                        {{ serialized }}
+                    {% endautoescape %}
 
-//"{{json_data}}"
-    console.log(json_data)
-
-		var semesters = [];
-				{% for semester in semesters %}
-				 	semesters.push('{{semester.term_description}}')
-				 {% endfor %}
+    console.log(serialized)
 
 		var classes_offered = [];
 				{% for classes in semester_classes1 %}
