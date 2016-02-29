@@ -6,5 +6,5 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^graph', views.graph_data, name='graph_data'),
-    url(r'^graph', views.graph_data,name='some_view'),
+    url(r'^graph', views.clickable_graph,name='clickable_graph'),
     ]
